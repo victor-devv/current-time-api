@@ -23,12 +23,6 @@ variable "cidr_block" {
   type        = string
 }
 
-variable "regional" {
-  type        = bool
-  description = "Whether is a regional cluster (zonal cluster if set false. WARNING: changing this after cluster creation is destructive!)"
-  default     = true
-}
-
 variable "region" {
   description = "Region for the VPC and subnetwork"
   type        = string
@@ -59,23 +53,3 @@ variable "ip_range_services" {
   type        = string
   description = "The _name_ of the secondary subnet range to use for services"
 }
-
-variable "service_account_roles" {
-  type = list(string)
-
-  description = "List of IAM roles to assign to the service account."
-  default = [
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/compute.osLogin",
-  ]
-}
-
-variable "bastion_members" {
-  type = list(string)
-
-  description = "List of users, groups, SAs who need access to the bastion host"
-  default     = []
-}
-
