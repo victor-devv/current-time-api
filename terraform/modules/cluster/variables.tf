@@ -13,7 +13,7 @@ variable "description" {
   description = "The description of the cluster"
   default     = ""
 }
-
+ 
 variable "regional" {
   type        = bool
   description = "Whether is a regional cluster (zonal cluster if set false. WARNING: changing this after cluster creation is destructive!)"
@@ -119,12 +119,12 @@ variable "maintenance_recurrence" {
   default     = ""
 }
 
-variable "ip_range_pods" {
+variable "pods_range_name" {
   type        = string
   description = "The _name_ of the secondary subnet ip range to use for pods"
 }
 
-variable "ip_range_services" {
+variable "svc_range_name" {
   type        = string
   description = "The _name_ of the secondary subnet range to use for services"
 }

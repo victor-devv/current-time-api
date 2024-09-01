@@ -18,11 +18,6 @@ variable "subnet_name" {
   description = "The subnetwork to host the cluster in (required)"
 }
 
-variable "cidr_block" {
-  description = "CIDR block for the subnetwork"
-  type        = string
-}
-
 variable "region" {
   description = "Region for the VPC and subnetwork"
   type        = string
@@ -44,12 +39,12 @@ variable "nat_gateway_name" {
   type        = string
 }
 
-variable "ip_range_pods" {
+variable "pods_range_name" {
   type        = string
   description = "The _name_ of the secondary subnet ip range to use for pods"
 }
 
-variable "ip_range_services" {
+variable "svc_range_name" {
   type        = string
   description = "The _name_ of the secondary subnet range to use for services"
 }

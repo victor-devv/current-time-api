@@ -16,8 +16,8 @@ resource "google_container_cluster" "primary" {
   default_max_pods_per_node = 110
 
   ip_allocation_policy {
-    cluster_secondary_range_name  = var.ip_range_pods
-    services_secondary_range_name = var.ip_range_services
+    cluster_secondary_range_name  = var.pods_range_name
+    services_secondary_range_name = var.svc_range_name
   }
 
   dynamic "release_channel" {

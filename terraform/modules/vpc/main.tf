@@ -6,14 +6,13 @@ resource "google_compute_network" "vpc_network" {
 resource "google_compute_subnetwork" "subnet" {
   name          = var.subnet_name
   network       = google_compute_network.vpc_network.id
-  ip_cidr_range = var.cidr_block
   region        = var.region
   private_ip_google_access = true
   secondary_ip_range {
-    range_name    = var.ip_range_pods
+    range_name    = var.pods_range_name
   }
   secondary_ip_range {
-    range_name    = var.ip_range_services
+    range_name    = var.svc_range_name
   }
   depends_on = [
     google_compute_network.vpc_network,
