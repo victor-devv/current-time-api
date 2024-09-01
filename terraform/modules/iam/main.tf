@@ -13,6 +13,12 @@ resource "google_service_account" "cluster_service_account" {
   display_name = "Terraform-managed service account for cluster ${var.cluster_name}"
 }
 
+resource "google_project_iam_binding" "cluster_service_account-cluster_admin" {
+  project = var.project_id
+  role    = "roles/container.clusterAdmin"
+  members = ["serviceAccount:${google_service_account.cluster_service_account.email}"]
+}
+
 resource "google_project_iam_member" "cluster_service_account-log_writer" {
   count   = var.create_service_account ? 1 : 0
   project = google_service_account.cluster_service_account[0].project

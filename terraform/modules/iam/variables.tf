@@ -53,16 +53,3 @@ variable "bastion_service_account_roles" {
     "roles/compute.osAdminLogin"
   ]
 }
-
-variable "service_account_roles" {
-  type = list(string)
-
-  description = "List of IAM roles to assign to the service account."
-  default = [
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/compute.osLogin",
-  ]
-}
-
