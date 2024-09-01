@@ -1,0 +1,8 @@
+*.tfplan
+*.tfstate
+*.tfstate.backup
+*.terraform.lock.hcl
+*.lock.info
+.terraform
+.DS_Store
+*.zip
