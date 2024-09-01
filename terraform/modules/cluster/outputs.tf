@@ -72,9 +72,9 @@ output "master_authorized_networks_config" {
   value       = google_container_cluster.primary.master_authorized_networks_config
 }
 
-output "master_version" {
+output "cluster_master_version" {
   description = "Current master kubernetes version"
-  value       = local.cluster_master_version
+  value       = google_container_cluster.primary.master_version
 }
 
 output "ca_certificate" {
