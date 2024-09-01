@@ -6,3 +6,10 @@
 .terraform
 .DS_Store
 *.zip
+api/node_modules
+api/dist
+api/.env
+api/yarn-error.log
+api/coverage
+api/logs.json
+.devcontainer
