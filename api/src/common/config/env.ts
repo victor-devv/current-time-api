@@ -13,12 +13,11 @@ const optionalEnvVars = {
   api_version: process.env.API_VERSION || '/api/v1',
   app_env: getEnv(),
   service_name: process.env.SERVICE_NAME || 'shortlet-current-time',
-  worker_port: process.env.WORKER_PORT,
 } as const;
 
 const requiredEnvVars = {
   port: Number(process.env.PORT),
-  salt_rounds: Number(process.env.SALT_ROUNDS) || 10,
+  salt_rounds: Number(process.env.SALT_ROUNDS) || 10
 } as const;
 
 const prodAndStagingVars = {
