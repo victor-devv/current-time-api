@@ -73,6 +73,12 @@ variable "maintenance_recurrence" {
   default     = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH"
 }
 
+variable "release_channel" {
+  type        = string
+  description = "The release channel of this cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR`, `STABLE` and `EXTENDED`. Defaults to `REGULAR`."
+  default     = "UNSPECIFIED"
+}
+
 // Variables for Bastion
 
 variable "service_account_roles" {
