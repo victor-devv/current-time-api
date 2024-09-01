@@ -215,25 +215,25 @@ variable "cluster_resource_labels" {
 
 variable "deploy_using_private_endpoint" {
   type        = bool
-  description = "(Beta) A toggle for Terraform and kubectl to connect to the master's internal IP address during deployment."
-  default     = false
-}
-
-variable "enable_private_endpoint" {
-  type        = bool
-  description = "(Beta) Whether the master's internal IP address is used as the cluster endpoint"
+  description = "A toggle for Terraform and kubectl to connect to the master's internal IP address during deployment."
   default     = false
 }
 
 variable "enable_private_nodes" {
   type        = bool
-  description = "(Beta) Whether nodes have internal IP addresses only"
+  description = "Enables the private cluster feature, creating a private endpoint on the cluster. In a private cluster, nodes only have RFC 1918 private addresses and communicate with the master's private endpoint via private networking"
+  default     = false
+}
+
+variable "enable_private_endpoint" {
+  type        = bool
+  description = "When true, the cluster's private endpoint is used as the cluster endpoint and access through the public endpoint is disabled. When false, either endpoint can be used. This field only applies to private clusters, when enable_private_nodes is true. This field only applies to private clusters, when enable_private_nodes is true"
   default     = false
 }
 
 variable "master_ipv4_cidr_block" {
   type        = string
-  description = "(Beta) The IP range in CIDR notation to use for the hosted master network"
+  description = "The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. This field only applies to private clusters, when enable_private_nodes is true"
   default     = "10.0.0.0/28"
 }
 
@@ -274,7 +274,7 @@ variable "gateway_api_channel" {
 }
 
 variable "workload_vulnerability_mode" {
-  description = "(beta) Vulnerability mode."
+  description = "(beta) Sets which mode to use for Protect workload vulnerability scanning feature. Accepted values are DISABLED, BASIC"
   type        = string
   default     = ""
 }

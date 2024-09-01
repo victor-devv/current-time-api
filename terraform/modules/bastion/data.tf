@@ -5,6 +5,7 @@ data "template_file" "startup_script" {
   sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
   sudo apt-get install -y kubectl
   sudo apt-get install -y tinyproxy
+  sudo apt-get install -yq git
   EOF
 }
 

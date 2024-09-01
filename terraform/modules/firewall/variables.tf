@@ -87,11 +87,11 @@ variable "shadow_firewall_rules_log_config" {
 
 variable "master_ipv4_cidr_block" {
   type        = string
-  description = "(Beta) The IP range in CIDR notation to use for the hosted master network"
+  description = "The IP range in CIDR notation to use for the hosted master network"
   default     = "10.0.0.0/28"
 }
 
-variable "ip_range_pods" {
+variable "pods_range_name" {
   type        = string
   description = "The _name_ of the secondary subnet ip range to use for pods"
 }

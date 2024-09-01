@@ -13,7 +13,7 @@ locals {
 
   cluster_alias_ranges_cidr = var.add_cluster_firewall_rules ? { for range in toset(data.google_compute_subnetwork.gke_subnetwork[0].secondary_ip_range) : range.range_name => range.ip_cidr_range } : {}
 
-  pod_all_ip_ranges = var.add_cluster_firewall_rules ? [local.cluster_alias_ranges_cidr[var.ip_range_pods]] : []
+  pod_all_ip_ranges = var.add_cluster_firewall_rules ? [local.cluster_alias_ranges_cidr[var.pods_range_name]] : []
 }
 
 data "google_compute_subnetwork" "gke_subnetwork" {

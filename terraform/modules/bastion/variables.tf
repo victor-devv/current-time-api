@@ -35,4 +35,3 @@ variable "bastion_machine_type" {
   description = "The machine type to create"
   default     = "g1-small"
 }
-
