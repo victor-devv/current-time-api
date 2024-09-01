@@ -3,7 +3,8 @@ import 'reflect-metadata';
 // allow creation of aliases for directories
 import 'module-alias/register';
 import http from 'http';
-import env from '../common/config/env';
+import env from '@app/common/config/env';
+import logger from '@app/common/services/logger/logger';
 import { App } from './app';
 
 const start = async () => {
@@ -14,10 +15,13 @@ const start = async () => {
   
       httpServer.listen(env.port);
       httpServer.on('listening', () =>
-        console.log('listening on port ' + env.port)
+        logger.message(
+          `🚀  ${env.service_name} running in ${env.app_env}. Listening on ` +
+            env.port
+        )
       );
     } catch (err) {
-      console.error(err, 'Fatal server error');
+      logger.error(err, 'Fatal server error');
     }
 };
 
