@@ -48,7 +48,7 @@ const missingVariables = requiredVariables
 
 if (!isEmpty(missingVariables)) {
   throw new Error(
-    `The following required variables are missing: ${missingVariables}}`
+    `The following required variables are missing: ${missingVariables}`
   );
 }
 
