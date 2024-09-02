@@ -26,7 +26,12 @@ resource "null_resource" "prep" {
   depends_on = [ google_project_service.enabled_apis ]
 }
 
-//VPC MODULE
+data "google_client_config" "current" {
+}
+
+# VPC
+# ================================================================================
+
 module "vpc" {
   source              = "./modules/vpc"
 
@@ -43,7 +48,25 @@ module "vpc" {
   depends_on = [ null_resource.prep ]
 }
 
-//IAM MODULE
+# FIREWALL
+# ================================================================================
+
+module "firewall" {
+  source                  = "./modules/firewall"
+
+  project_id              = var.project_id
+  cluster_name            = var.cluster_name
+  region                  = var.region
+  network_name            = module.vpc.network_name
+  subnet_name             = module.vpc.subnet_name
+  network_project_id      = var.network_project_id
+  pods_range_name         = var.pods_range_name
+  master_ipv4_cidr_block  = "172.10.0.0/28"
+}
+
+# IAM & SERVICE ACCOUNTS
+# ================================================================================
+
 module "iam" {
   source                  = "./modules/iam"
 
@@ -52,7 +75,9 @@ module "iam" {
   grant_registry_access   = true
 }
 
-//BASTION MODULE - deploys a Bastion host which helps grant access to the private Control plane, limiting the possible attack surface area
+# BASTION NODE - deploys a Bastion host which helps grant access to the private Control plane, limiting the possible attack surface area
+# ================================================================================
+
 module "bastion" {
   source              = "./modules/bastion"
 
@@ -63,7 +88,9 @@ module "bastion" {
   subnet_self_link    = module.vpc.subnet_self_link 
 }
 
-//CLUSTER MODULE: must deoend on [module.iam]
+# GKE CLUSTER
+# ================================================================================
+
 module "cluster" {
   source                      = "./modules/cluster"
 
@@ -94,21 +121,46 @@ module "cluster" {
     display_name      = "Bastion Node"
   }]
 
+  http_load_balancing         = false #NGINX ingress instead
+
   depends_on = [ module.enabled_google_apis ]
 }
 
-//FIREWALL MODULE
-module "firewall" {
-  source                  = "./modules/firewall"
+# NGINX INGRESS CONTROLLER
+# ================================================================================
 
-  project_id              = var.project_id
-  cluster_name            = var.cluster_name
-  region                  = var.region
-  network_name            = module.vpc.network_name
-  subnet_name             = module.vpc.subnet_name
-  network_project_id      = var.network_project_id
-  pods_range_name         = var.pods_range_name
-  master_ipv4_cidr_block  = "172.10.0.0/28"
+module "ingress-nginx" {
+  source = "./modules/ingress-nginx/"
+
+  depends_on = [ 
+    module.cluster
+  ]
 }
 
-//K8s MODULE
+# CERT MANAGER (letsencrypt)
+# ================================================================================
+
+module "certmanager" {
+  source = "./modules/cert-manager/"
+
+  depends_on = [ 
+    module.cluster
+  ]
+}
+
+# simple nginx container with an ingress
+# ================================================================================
+
+module "shortlet_current_time_app" {
+  source              = "./modules/app/"
+
+  image_repository    = var.image_repository
+  image_tag           = var.image_tag
+  app_env             = var.app_env
+  replica_count       = var.replica_count  
+
+  depends_on = [
+    module.ingress-nginx,
+    module.certmanager
+  ]
+}

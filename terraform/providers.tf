@@ -28,3 +28,21 @@ provider "google" {
   project = var.project_id
   region  = var.region
 }
+
+provider "helm" {
+  kubernetes {
+    token                  = data.google_client_config.current.access_token
+    host                   = "https://${module.cluster.endpoint}"
+    cluster_ca_certificate = base64decode(module.cluster.ca_certificate)
+  }
+}
+
+provider "kubernetes" {
+    host  = module.cluster.endpoint
+    token = data.google_client_config.current.access_token
+    client_certificate = base64decode(module.cluster.client_certificate)
+    client_key = base64decode(module.cluster.client_key)
+    cluster_ca_certificate = base64decode(
+      module.cluster.ca_certificate,
+    )
+}

@@ -79,14 +79,23 @@ variable "release_channel" {
   default     = "UNSPECIFIED"
 }
 
-// KMS
-# variable "keyring" {
-#   description = "Keyring name."
-#   type        = string
-# }
+variable "image_repository" {
+  type        = string
+  description = "GCR image repository for containing the application image"
+}
 
-# variable "keys" {
-#   description = "Key names."
-#   type        = list(string)
-#   default     = []
-# }
+variable "image_tag" {
+  type        = string
+  description = "Application image tag"
+}
+
+variable "app_env" {
+  type        = string
+  description = "The application environment (production | staging)"
+}
+
+variable "replica_count" {
+  type        = number
+  description = "The pod replica count for the deployment"
+  default = 1
+}
