@@ -13,6 +13,7 @@ resource "google_container_cluster" "primary" {
   subnetwork = "projects/${local.network_project_id}/regions/${local.region}/subnetworks/${var.subnet_name}"
 
   initial_node_count = 1
+  remove_default_node_pool = true
   default_max_pods_per_node = 110
 
   ip_allocation_policy {
@@ -64,7 +65,7 @@ resource "google_container_cluster" "primary" {
   }
 
   #Autopilot clusters are optimized to run most production workloads, and provision compute resources based on your Kubernetes manifests
-  enable_autopilot = true
+  # enable_autopilot = false
 
   dynamic "master_authorized_networks_config" {
     for_each = local.master_authorized_networks_config
@@ -244,4 +245,36 @@ resource "google_container_cluster" "primary" {
   }
 
   depends_on = [var.subnet_self_link]
+}
+
+resource "google_container_node_pool" "primary" {
+  name       = "${var.cluster_name}-nodepool"
+  cluster    = google_container_cluster.primary.id
+  # node_count = var.node_count
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
+  autoscaling {
+    min_node_count = "0"
+    max_node_count = "5" #well, for test purposes
+  }
+
+  node_config {
+    preemptible  = false
+    machine_type = var.nodepool_machine_type
+
+    labels = {
+      "role" = "${var.cluster_name}-nodepool"
+    }
+
+    service_account = var.service_account
+    oauth_scopes    = [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+  }
 }

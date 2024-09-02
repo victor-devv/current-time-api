@@ -20,40 +20,6 @@ variable "network_project_id" {
   type        = string
 }
 
-
-// VPC VARIABLES  
-variable "network_name" {
-  description = "The name to be assigned to the VPC network"
-  type        = string
-  default     = ""
-}
-
-variable "subnet_name" {
-  description = "The name to be assigned to the VPC sub-network"
-  type        = string
-  default     = ""
-}
-
-variable "pods_range_name" {
-  description = "The name to be assigned to the secondary subnet ip range to use for the pods"
-  type        = string
-}
-
-variable "svc_range_name" {
-  description = "The name to be assigned to the secondary subnet range to use for services"
-  type        = string
-}
-
-variable "nat_router_name" {
-  description = "The name to be assigned to the Cloud NAT router"
-  type        = string
-}
-
-variable "nat_gateway_name" {
-  description = "Name for cloud NAT gateway"
-  type        = string
-}
-
 // CLUSTER VARIABLES
 variable "maintenance_start_time" {
   description = "Time window specified for daily or recurring maintenance operations in RFC3339 format"
@@ -87,6 +53,11 @@ variable "image_repository" {
 variable "image_tag" {
   type        = string
   description = "Application image tag"
+}
+
+variable "app_name" {
+  type        = string
+  description = "The name for the application deployment"
 }
 
 variable "app_env" {

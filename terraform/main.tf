@@ -37,32 +37,20 @@ module "vpc" {
 
   project_id          = var.project_id
   cluster_name        = var.cluster_name
-  network_name        = var.network_name
-  subnet_name         = var.subnet_name
   region              = var.region
-  nat_router_name     = var.nat_router_name
-  nat_gateway_name    = var.nat_gateway_name
-  pods_range_name     = var.pods_range_name
-  svc_range_name      = var.svc_range_name
+  network_name        = "${var.cluster_name}-vpc"
+  subnet_name         = "${var.cluster_name}-vpc-subnet"
+  subnet_cidr_block   = "172.16.1.0/24"
+  nat_router_name     = "${var.cluster_name}-vpc-nat-router"
+  nat_gateway_name    = "${var.cluster_name}-vpc-nat-gateway"
+  pods_range_name     = "${var.cluster_name}-vpc-pod-range"
+  pods_cidr_range     = "172.20.0.0/16"
+  svc_range_name      = "${var.cluster_name}-vpc-svc-range"
+  svc_cidr_range      = "172.21.0.0/20"
 
   depends_on = [ null_resource.prep ]
 }
 
-# FIREWALL
-# ================================================================================
-
-module "firewall" {
-  source                  = "./modules/firewall"
-
-  project_id              = var.project_id
-  cluster_name            = var.cluster_name
-  region                  = var.region
-  network_name            = module.vpc.network_name
-  subnet_name             = module.vpc.subnet_name
-  network_project_id      = var.network_project_id
-  pods_range_name         = var.pods_range_name
-  master_ipv4_cidr_block  = "172.10.0.0/28"
-}
 
 # IAM & SERVICE ACCOUNTS
 # ================================================================================
@@ -98,13 +86,14 @@ module "cluster" {
   cluster_name                = var.cluster_name
   regional                    = true
   region                      = var.region
+  service_account             = module.iam.cluster_service_account.0.email
 
   network_name                = module.vpc.network_name
   network_project_id          = var.network_project_id
   subnet_name                 = module.vpc.subnet_name
   subnet_self_link            = module.vpc.subnet_self_link
-  pods_range_name             = var.pods_range_name
-  svc_range_name              = var.svc_range_name
+  pods_range_name             = "${var.cluster_name}-vpc-pod-range"
+  svc_range_name              = "${var.cluster_name}-vpc-svc-range"
 
   release_channel             = var.release_channel
   maintenance_start_time      = var.maintenance_start_time
@@ -117,13 +106,31 @@ module "cluster" {
   
   master_ipv4_cidr_block          = "172.10.0.0/28"
   master_authorized_networks  = [{
-    cidr_block        = "${module.bastion.bastion_public_ip_address}/32"
+    cidr_block        = "${module.bastion.bastion_ip_address}/32"
     display_name      = "Bastion Node"
   }]
 
   http_load_balancing         = false #NGINX ingress instead
+  nodepool_machine_type       = "e2-custom-8-32768"
 
-  depends_on = [ module.enabled_google_apis ]
+  depends_on = [ google_project_service.enabled_apis ]
+}
+
+# FIREWALL
+# ================================================================================
+
+module "firewall" {
+  source                  = "./modules/firewall"
+
+  project_id              = var.project_id
+  cluster_name            = var.cluster_name
+  region                  = var.region
+  network_name            = module.vpc.network_name
+  subnet_name             = module.vpc.subnet_name
+  network_project_id      = var.network_project_id
+  pods_range_name         = "${var.cluster_name}-vpc-pod-range"
+  master_ipv4_cidr_block  = "172.10.0.0/28"
+  tpu_ipv4_cidr_block     = module.cluster.tpu_ipv4_cidr_block
 }
 
 # NGINX INGRESS CONTROLLER
@@ -148,12 +155,13 @@ module "certmanager" {
   ]
 }
 
-# simple nginx container with an ingress
+# KUBERNETES RESOURCES - DEPLOYMENT, SERVICE, PODS
 # ================================================================================
 
-module "shortlet_current_time_app" {
+module "app" {
   source              = "./modules/app/"
 
+  app_name            = var.app_name
   image_repository    = var.image_repository
   image_tag           = var.image_tag
   app_env             = var.app_env
@@ -161,6 +169,7 @@ module "shortlet_current_time_app" {
 
   depends_on = [
     module.ingress-nginx,
-    module.certmanager
+    module.certmanager,
+    module.cluster
   ]
 }

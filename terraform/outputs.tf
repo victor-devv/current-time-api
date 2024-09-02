@@ -18,14 +18,9 @@ output "service_account" {
   value       = module.cluster.service_account
 }
 
-output "router_name" {
-  description = "Name of the router that was created"
-  value       = module.vpc.router_name
-}
-
-output "bastion_name" {
-  description = "Name of the bastion host"
-  value       = module.bastion.hostname
+output "nat_router_name" {
+  description = "Name of the NAT router that was created"
+  value       = module.vpc.nat_router_name
 }
 
 output "bastion_ip_address" {
@@ -33,10 +28,10 @@ output "bastion_ip_address" {
   value       = module.bastion.bastion_ip_address
 }
 
-output "bastion_public_ip_address" {
-  description = "The public IP of the bastion node"
-  value       = module.bastion.bastion_public_ip_address
-}
+# output "bastion_public_ip_address" {
+#   description = "The public IP of the bastion node"
+#   value       = module.bastion.bastion_public_ip_address
+# }
 
 output "ingress_loadbalancer_ip" {
   description = "load balancer ip"
