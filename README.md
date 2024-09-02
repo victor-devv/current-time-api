@@ -101,5 +101,5 @@ This repository contains a Node.js implementation of a simple API that returns t
 | <a name="release_channel"></a> [release\_channel](#input\_release\_channel) | The release channel of this cluster, which provides more control over automatic upgrades of your cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR`, `STABLE` and `EXTENDED` | `string` | UNSPECIFIED | no |
 | <a name="image_repository"></a> [image\_repository](#input\_image\_repository) | GCR image repository for containing the application image | `string` | n/a | yes |
 | <a name="image_tag"></a> [image\_tag](#input\_image\_tag) | Application image tag | `string` | n/a | yes |
-| <a name="app_env"></a> [app\_env](#input\_app\_env) | Application environment (production | staging) | `string` | UNSPECIFIED | no |
+| <a name="app_env"></a> [app\_env](#input\_app\_env) | Application environment (production or staging) | `string` | n/a | no |
 | <a name="replica_count"></a> [replica\_count](#input\_replica\_count) | The pod replica count for the deployment | `number` | 1 | no |
