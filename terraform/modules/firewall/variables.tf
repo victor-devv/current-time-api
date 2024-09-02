@@ -29,6 +29,12 @@ variable "region" {
   type        = string
 }
 
+variable "zones" {
+  type        = list(string)
+  description = "The zones to host the cluster in (optional if regional cluster / required if zonal)"
+  default     = []
+}
+
 variable "network_project_id" {
   type        = string
   description = "The project ID of the shared VPC's host (for shared vpc support)"
@@ -100,4 +106,9 @@ variable "enable_tpu" {
   type        = bool
   description = "Enable Cloud TPU resources in the cluster. WARNING: changing this after cluster creation is destructive!"
   default     = false
+}
+
+variable "tpu_ipv4_cidr_block" {
+  description = "The IP range in CIDR notation used for the TPUs"
+  type        = string
 }

@@ -27,11 +27,11 @@ variable "subnet_self_link" {
 variable "bastion_image" {
   type        = string
   description = "The image from which to initialize this disk."
-  default     = "debian-cloud"
+  default     = "debian-12-bookworm-v20240815"
 }
 
 variable "bastion_machine_type" {
   type        = string
   description = "The machine type to create"
-  default     = "g1-small"
+  default     = "e2-custom-8-32768"
 }

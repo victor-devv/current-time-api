@@ -1,7 +1,7 @@
-output "bastion_public_ip_address" {
-  description = "The public IP of the bastion node"
-  value       = google_compute_instance.bastion.network_interface.0.access_config.0.nat_ip
-}
+# output "bastion_public_ip_address" {
+#   description = "The public IP of the bastion node"
+#   value       = google_compute_instance.bastion.network_interface.0.access_config.0.nat_ip
+# }
 
 output "bastion_ip_address" {
   description = "The private IP of the bastion node"

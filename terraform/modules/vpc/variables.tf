@@ -48,3 +48,19 @@ variable "svc_range_name" {
   type        = string
   description = "The _name_ of the secondary subnet range to use for services"
 }
+
+variable "subnet_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation to use for the hosted master network. This range will be used for assigning private IP addresses to the cluster master(s) and the ILB VIP. This range must not overlap with any other ranges in use within the cluster's network, and it must be a /28 subnet. This field only applies to private clusters, when enable_private_nodes is true"
+  default     = "10.0.0.0/28"
+}
+
+variable "pods_cidr_range" {
+  description = "The IP range in CIDR notation to use for the pods"
+  type        = string
+}
+
+variable "svc_cidr_range" {
+  description = "The IP range in CIDR notation to use for the services"
+  type        = string
+}

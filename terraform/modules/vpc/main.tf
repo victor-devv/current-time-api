@@ -8,11 +8,15 @@ resource "google_compute_subnetwork" "subnet" {
   network       = google_compute_network.vpc_network.id
   region        = var.region
   private_ip_google_access = true
+  ip_cidr_range = var.subnet_cidr_block
+
   secondary_ip_range {
     range_name    = var.pods_range_name
+    ip_cidr_range = var.pods_cidr_range
   }
   secondary_ip_range {
     range_name    = var.svc_range_name
+    ip_cidr_range = var.svc_cidr_range
   }
   depends_on = [
     google_compute_network.vpc_network,
@@ -59,8 +63,4 @@ resource "google_compute_address" "nat" {
 
   address_type = "EXTERNAL"
   network_tier = "PREMIUM"
-
-  depends_on = [
-    google_project_service.compute
-  ]
 }

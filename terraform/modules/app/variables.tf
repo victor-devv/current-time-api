@@ -1,3 +1,8 @@
+variable "app_name" {
+  type        = string
+  description = "The name for the application deployment"
+}
+
 variable "image_repository" {
   type        = string
   description = "GCR image repository for containing the application image"

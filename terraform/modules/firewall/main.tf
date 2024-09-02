@@ -51,7 +51,7 @@ resource "google_compute_firewall" "tpu_egress" {
   direction   = "EGRESS"
 
   target_tags        = [local.cluster_network_tag]
-  destination_ranges = [google_container_cluster.primary.tpu_ipv4_cidr_block]
+  destination_ranges = [var.tpu_ipv4_cidr_block]
 
   # Allow all possible protocols
   allow { protocol = "tcp" }
