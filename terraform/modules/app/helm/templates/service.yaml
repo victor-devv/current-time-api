@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shortlet-current-time.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "shortlet-current-time.name" . }}
+    helm.sh/chart: {{ include "shortlet-current-time.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "shortlet-current-time.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
