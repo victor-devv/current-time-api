@@ -56,11 +56,3 @@ resource "google_compute_router_nat" "nat_gateway" {
     null_resource.wait_for_ip,
   ]
 }
-
-resource "google_compute_address" "nat" {
-  name   = "${var.nat_gateway_name}-addr"
-  region = var.region
-
-  address_type = "EXTERNAL"
-  network_tier = "PREMIUM"
-}

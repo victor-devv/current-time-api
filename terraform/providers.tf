@@ -38,7 +38,7 @@ provider "helm" {
 }
 
 provider "kubernetes" {
-    host  = module.cluster.endpoint
+    host  = "https://${module.cluster.endpoint}"
     token = data.google_client_config.current.access_token
     client_certificate = base64decode(module.cluster.client_certificate)
     client_key = base64decode(module.cluster.client_key)

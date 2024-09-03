@@ -96,19 +96,16 @@ module "cluster" {
   svc_range_name              = "${var.cluster_name}-vpc-svc-range"
 
   release_channel             = var.release_channel
-  maintenance_start_time      = var.maintenance_start_time
-  maintenance_end_time        = var.maintenance_end_time
-  maintenance_recurrence      = var.maintenance_recurrence
 
   enable_vertical_pod_autoscaling = true
-  enable_private_endpoint         = true
+  enable_private_endpoint         = false
   enable_private_nodes            = true
   
   master_ipv4_cidr_block          = "172.10.0.0/28"
-  master_authorized_networks  = [{
-    cidr_block        = "${module.bastion.bastion_ip_address}/32"
-    display_name      = "Bastion Node"
-  }]
+  # master_authorized_networks  = [{
+  #   cidr_block        = "${module.bastion.bastion_ip_address}/32"
+  #   display_name      = "Bastion Node"
+  # }]
 
   http_load_balancing         = false #NGINX ingress instead
   nodepool_machine_type       = "e2-custom-8-32768"

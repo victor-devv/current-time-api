@@ -48,16 +48,28 @@ resource "helm_release" "app" {
   timeout = 60
 }
 
-resource "kubernetes_ingress" "prod_ingress" {
+resource "kubernetes_ingress_v1" "prod_ingress" {
   metadata {
-    name      = "nodejs-ingress"
+    name      = kubernetes_namespace.production.metadata[0].name
     namespace = kubernetes_namespace.production.metadata[0].name
+    annotations = {
+      "cert-manager.io/cluster-issuer"              = "letsencrypt"
+      "kubernetes.io/ingress.class"                 = "nginx"
+      "nginx.ingress.kubernetes.io/limit-rps"       = "4"
+      "nginx.ingress.kubernetes.io/rewrite-target"  = "/api/v1$uri"
+      "nginx.ingress.kubernetes.io/ssl-redirect"    = "false"
+      "nginx.ingress.kubernetes.io/use-regex"       = "true"
+    }
   }
 
   spec {
-    backend {
-      service_name = var.app_name
-      service_port = 80
+    default_backend {
+      service {
+        name = var.app_name
+        port {
+          number = 80
+        }
+      }
     }
 
     rule {
@@ -65,8 +77,12 @@ resource "kubernetes_ingress" "prod_ingress" {
         path {
           path = "/"
           backend {
-            service_name = var.app_name
-            service_port = 80
+            service {
+              name = var.app_name
+              port {
+                number = 80
+              }
+            }
           }
         }
       }

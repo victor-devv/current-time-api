@@ -3,6 +3,7 @@ resource "google_compute_instance" "bastion" {
   name         = local.bastion_name
   machine_type = var.bastion_machine_type
   zone         = "${var.region}-a"
+  allow_stopping_for_update = true
   boot_disk {
     initialize_params {
       image = var.bastion_image

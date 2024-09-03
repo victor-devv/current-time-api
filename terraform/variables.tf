@@ -21,24 +21,6 @@ variable "network_project_id" {
 }
 
 // CLUSTER VARIABLES
-variable "maintenance_start_time" {
-  description = "Time window specified for daily or recurring maintenance operations in RFC3339 format"
-  type        = string
-  default     = "2024-12-08T00:00:00Z"
-}
-
-variable "maintenance_end_time" {
-  description = "Time window specified for recurring maintenance operations in RFC3339 format"
-  type        = string
-  default     = "2024-12-08T05:00:00Z"
-}
-
-variable "maintenance_recurrence" {
-  description = "Frequency of the recurring maintenance window in RFC5545 format"
-  type        = string
-  default     = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH"
-}
-
 variable "release_channel" {
   type        = string
   description = "The release channel of this cluster, which provides more control over automatic upgrades of your cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR`, `STABLE` and `EXTENDED`. Defaults to `REGULAR`."
