@@ -113,14 +113,13 @@ jobs:
           echo "IMAGE=$IMG" >> $GITHUB_ENV
           echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
 
-      # docker build -t ${{ env.IMAGE }} .
-      # docker tag ${{ env.IMAGE }} ${{ env.LATEST_IMAGE }}
       - name: Build Docker image
         working-directory: ./api
         run: |
-          docker build -t gcr.io/shortlet-app-434312/current-time-api:latest .
+          docker build -t ${{ env.IMAGE }} .
+          docker tag ${{ env.IMAGE }} ${{ env.LATEST_IMAGE }}
 
       - name: Push Docker image to GCR
         working-directory: ./api
         run: |
-          docker push gcr.io/shortlet-app-434312/current-time-api:latest
+          docker push ${{ env.LATEST_IMAGE }}
