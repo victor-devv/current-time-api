@@ -8,7 +8,7 @@ services:
     command:
       - /bin/sh
       - -c
-      - yarn start
+      - yarn build:tsc && yarn start
   app:
     build: .
     environment:
@@ -17,4 +17,4 @@ services:
     command:
       - /bin/sh
       - -c
-      - yarn test
+      - yarn build:tsc && yarn test
