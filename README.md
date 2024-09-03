@@ -143,5 +143,3 @@ The application and infrastructure deployment is automated using a GitHub Action
 | <a name="app_env"></a> [app\_env](#input\_app\_env) | Application environment (production or staging) | `string` | n/a | yes |
 | <a name="app_namespace"></a> [app\_namespace](#input\_app\_namespace) | The kubernetes namespace to deploy the application to | `string` | n/a | yes |
 | <a name="replica_count"></a> [replica\_count](#input\_replica\_count) | The pod replica count for the deployment | `number` | 1 | no |
-
-## API
