@@ -242,12 +242,17 @@ jobs:
         id: apply
         run: terraform apply -auto-approve "tfplan"
 
-      - name: Validate deployment
+      - name: Await deployment
         working-directory: ./terraform
         id: terraform_output
         run: |
-          INGRESS_LOADBALANCER_IP=$(terraform output ingress_loadbalancer_ip)
-          echo $INGRESS_LOADBALANCER_IP
+          IP=$(terraform output ingress_loadbalancer_ip)
+          echo "INGRESS_LOADBALANCER_IP=$IP" >> $GITHUB_ENV
           sleep 60
-          curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1
+
+      - name: Validate deployment
+        id: myRequest
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "http://${{ env.INGRESS_LOADBALANCER_IP }}/time"
           
