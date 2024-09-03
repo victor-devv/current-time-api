@@ -191,6 +191,9 @@ jobs:
       - name: Terraform validate
         run: terraform validate
 
+      - name: unlock
+        run: terraform force-unlock -force 1725372057179980
+
       - name: Terraform plan
         id: plan
         env:
