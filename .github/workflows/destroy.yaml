@@ -47,7 +47,7 @@ jobs:
         run: terraform init
 
       - name: Tf unlock
-        run: terraform force-unlock 1725393868424139
+        run: terraform force-unlock -force 1725393868424139
       
       - name: Terraform destroy 🗑️
         id : destroy
