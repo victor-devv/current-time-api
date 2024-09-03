@@ -193,7 +193,7 @@ jobs:
 
       - name: Terraform plan
         id: plan
-        run: terraform plan -var 'cluster_name=helios' -var 'project_id=${{ secrets.GCP_PROJECT_ID }}' -var 'network_project_id=${{ secrets.GCP_PROJECT_ID }}' -var 'image_repository=${{ secrets.REGISTRY }}/${{ env.APP_NAME }}' -var 'app_name=${{ env.APP_NAME }}' -var 'app_env=${{ env.APP_ENV }}' -var 'app_namsepace=${{ env.APP_NAMESPACE }}' -var-file="config/config.tfvars" -out="tfplan"
+        run: terraform plan -var 'cluster_name=helios' -var 'project_id=${{ secrets.GCP_PROJECT_ID }}' -var 'network_project_id=${{ secrets.GCP_PROJECT_ID }}' -var 'image_repository=${{ secrets.REGISTRY }}/${{ env.APP_NAME }}' -var 'app_name=${{ env.APP_NAME }}' -var 'app_env=${{ env.APP_ENV }}' -var 'app_namespace=${{ env.APP_NAMESPACE }}' -var-file="config/config.tfvars" -out="tfplan"
         continue-on-error: true
 
       - name: Terraform Plan Status
