@@ -256,5 +256,5 @@ jobs:
         run: sleep 60
       - name: Check deployment
         run: |
-          curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1
+          curl --fail http://${{ env.INGRESS_LOADBALANCER_IP }}/time || exit 1
           
