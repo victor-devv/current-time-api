@@ -120,5 +120,6 @@ jobs:
           image: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
           push: true          
           tags: ${{ env.LATEST_IMAGE }}
-          file: api/Dockerfile 
+          file: api/Dockerfile
+          directory: api 
           # context: api/Dockerfile

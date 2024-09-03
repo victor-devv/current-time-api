@@ -1,4 +1,4 @@
-FROM node:20.5.1-alpine as Base
+FROM node:20.5.1-alpine AS base
 
 WORKDIR /app
 
@@ -14,6 +14,6 @@ FROM node:20.5.1-alpine
 
 WORKDIR /app
 
-COPY --from=Base /app .
+COPY --from=base /app .
 
 CMD [ "yarn", "start" ]
