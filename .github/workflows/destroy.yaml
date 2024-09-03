@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 jobs:
-  destroy-dev:
+  destroy:
     runs-on: ubuntu-latest
     
     permissions:
@@ -45,7 +45,19 @@ jobs:
       - name: Terraform init 🔨
         id: init
         run: terraform init
+
+      - name: Tf unlock
+        run: terraform force-unlock 1725393868424139
       
       - name: Terraform destroy 🗑️
         id : destroy
-        run: terraform destroy -auto-approve 
+        env:
+          TF_VAR_cluster_name: ${{ vars.CLUSTER_NAME }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+          TF_VAR_network_project_id: ${{ secrets.GCP_PROJECT_ID }}
+          TF_VAR_image_repository: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
+          TF_VAR_image_tag: "latest-1fd3b616e83a65badbbe58f50d4e8a4d2a1ce800"
+          TF_VAR_app_name: ${{ github.event.repository.name }}
+          TF_VAR_app_env: ${{ vars.APP_ENV }}
+          TF_VAR_app_namespace: ${{ vars.APP_NAMESPACE }}
+        run: terraform destroy -auto-approve -var-file="config/config.tfvars"
