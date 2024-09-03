@@ -1,6 +1,18 @@
 # Current Time API
 
-This repository contains a Node.js implementation of a simple API that returns the current time in JSON format. It also contains a terraform template that creates a private Autopilot GKE cluster, sets up the cluster and deploys api on the cluster.
+This repository contains a comprehensive setup for deploying a Node.js implementation of a simple API that returns the current time in JSON format, alongside a robust cloud infrastructure consisting of a private Google Kubernetes Engine cluster and others, built using terraform. 
+
+The application and infrastructure deployment is automated using a GitHub Actions workflow which includes jobs that builds and tests the Node.js application, lints the helm charts, builds and pushes the application image to a private Google Container Registry, deploys the infrastructure, and exposes the API.
+
+## Dependencies
+- Google Cloud Platform account
+- Google Cloud Storage Bucket (to store terraform state file)
+- Google Cloud SDK
+- Google Cloud Workload Identity Provider setup for GitHub OIDC authentication in pipelines
+- Terraform
+- Docker
+- Yarn
+- GitHub
 
 ## Repository Sturcture
 
@@ -31,7 +43,7 @@ This repository contains a Node.js implementation of a simple API that returns t
                         |____providers.tf
                         |____variables.tf
                         |____output.tf
-                |____cluster                    # Creates Autopilot GKE cluster
+                |____cluster                    # Creates GKE cluster
                         |____main.tf
                         |____data.tf
                         |____providers.tf
@@ -65,10 +77,42 @@ This repository contains a Node.js implementation of a simple API that returns t
 
 ```
 
+- `/api`: This directory contains the Node.js API, which serves a simple endpoint that returns the current server time in JSON format.
 
-## How to use this automation
+ - `/terraform`: This directory contains all Terraform configurations and modules necessary to deploy the required cloud infrastructure. The setup includes a private Google Kubernetes Engine (GKE) cluster, a bastion node, and various supporting services.
 
-- 
+## How To Set Up OpenID Connect For GitHub Actions
+
+- Install Google Cloud SDK
+- Initialize gcloud CLI and authenticate: `gcloud init`
+- Create storage bucket: `gcloud projects add-iam-policy-binding $PROJECT_ID --member="$OWNER_SERVICE_ACCOUNT" --role=storage.buckets.create`
+- Create OIDC service account: `gcloud iam service-accounts create $OIDC_SERVICEACCOUNT_NAME --project="$PROJECT_ID" --description="$DESCRIPTION" --display-name="$DISPLAY_NAME"`
+- Apply required roles to OIDC service account: `gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$OIDC_SERVICEACCOUNT_ID" --role="$ROLE"`
+- Roles include: `roles/compute.admin, roles/container.admin, roles/storage.admin, roles/iam.serviceAccountAdmin, roles/iam.roleAdmin, roles/resourcemanager.projectIamAdmin, roles/iam.serviceAccountTokenCreator and roles/iam.serviceAccountUser`
+- Create workload identity pools: `gcloud iam workload-identity-pools create $POOL_NAME --project="$PROJECT_ID" --location="global" --display-name="$DISPLAY_NAME" --description="$DESCRIPTION"`
+- Create workload identity pool provider: `gcloud iam workload-identity-pools providers create-oidc $PROVIDER_NAME --project="$PROJECT_ID" --location="global" --workload-identity-pool="$POOL_NAME" --display-name="$DISPLAY_NAME" --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud,attribute.repository=assertion.repository" --issuer-uri="https://token.actions.githubusercontent.com"`
+- Authorize Github Repository: `gcloud iam service-accounts add-iam-policy-binding $OIDC_SA_ID --project="$PROJECT_ID" --role="roles/iam.workloadIdentityUser" --member="principalSet://iam.googleapis.com/${WORKLOAD_IDENTITY_POOL_ID}/attribute.repository/${REPO}"`
+
+## How To Use This Automation
+
+- Create a new branch with the format deploy/${cluster-name}.  
+- Fill in the required values at `terraform/config/config.tfvars`
+- Add the REGISTRY, PROJECT_ID as secrets
+- Create a merge request to the main branch, and ask for approval
+- After approval, the cluster will be deployed 
+
+## How To Run This Automation Locally
+
+- Clone this repository
+- Authorize docker to access GCR: `gcloud auth configure-docker gcr.io`
+- Build and push the docker image at `api`
+- Update the terraform backend file with your cloud storage bucket name   
+- Fill in the required values at `terraform/config/config.tfvars`
+- Change directory to the terraform root `cd terraform`
+- Initialize Terraform: `terraform init`
+- Generate a Terraform execution plan: `terraform plan -var-file="config/config.tfvars" -out="tfplan"`
+- Apply the terraform plan: `terraform apply tfplan`
+- Once deployed, copy the generated `ingress_loadbalancer_ip` and test the deployment by running `curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1`
 
 ## Modules
 
