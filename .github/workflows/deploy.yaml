@@ -1,4 +1,4 @@
-name: Build, Test, and Deploy
+name: Build, Test, and Deploy 🚀
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js 🪛
         uses: actions/setup-node@v4
         with:
           node-version: 20.5.1
@@ -30,11 +30,11 @@ jobs:
           restore-keys: |
             dependency-cache-
 
-      - name: Install dependencies
+      - name: Install dependencies 🪛
         working-directory: ./api
         run: yarn install
 
-      - name: Build TypeScript
+      - name: Build TypeScript 📦
         working-directory: ./api
         run: yarn build:tsc
 
@@ -60,16 +60,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Setup Docker Buildx 🪛
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Docker Compose
+      - name: Setup Docker Compose 🪛
         run: |
             sudo curl -L "https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
             docker-compose --version
 
-      - name: Build and Run Docker Compose
+      - name: Run tests 🛠️
         run: |
           set -o pipefail
           docker-compose up --build \
@@ -83,13 +83,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure helm
+      - name: Configure helm 🪛
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
           chmod +x get_helm.sh
           ./get_helm.sh
 
-      - name: Lint charts
+      - name: Lint charts 🧹
         working-directory: ./terraform/modules/app
         run: find . -path "./*" -type d -prune -not -name ".git" -not -name ".github" -not -name "docs" | xargs helm lint
 
@@ -110,7 +110,7 @@ jobs:
           name: dist
           path: ./api
 
-      - name: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud 🔑
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROV }}
@@ -119,17 +119,17 @@ jobs:
           token_format: "access_token"
           access_token_lifetime: "120s"
 
-      - name: Set up Cloud SDK
+      - name: Set up Cloud SDK 🪛
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Authorize Docker for GCR
+      - name: Authorize Docker for GCR 🔑
         working-directory: ./api
         run: gcloud auth configure-docker gcr.io
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx 🪛
         uses: docker/setup-buildx-action@v3
 
-      - name: Set up environment variables
+      - name: Set up environment variables 🪛
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           APP_NAME: ${{ github.event.repository.name }}
@@ -150,14 +150,14 @@ jobs:
           echo "IMAGE=$IMG" >> $GITHUB_ENV
           echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
 
-      - name: Build Docker image
+      - name: Build Docker image 📦
         working-directory: ./api
         run: |
           ls
           docker build -t ${{ env.IMAGE }} .
           docker tag ${{ env.IMAGE }} ${{ env.LATEST_IMAGE }}
 
-      - name: Push Docker image to GCR
+      - name: Push Docker image to GCR 🏖️
         working-directory: ./api
         run: |
           docker push ${{ env.LATEST_IMAGE }}
@@ -177,7 +177,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud 🔑
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROV }}
@@ -185,7 +185,8 @@ jobs:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}       
           token_format: "access_token"
           access_token_lifetime: "600s"
-      - name: Set up environment variables
+
+      - name: Set up environment variables 🪛
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           APP_NAME: ${{ github.event.repository.name }}
@@ -205,22 +206,22 @@ jobs:
 
           echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
       
-      - name: Setup Terraform with specified version on the runner
+      - name: Setup Terraform 🪛
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.5
           terraform_wrapper: false
              
-      - name: Terraform init
+      - name: Terraform init 🔨
         run: terraform init
       
-      - name: Terraform Format
+      - name: Terraform Format 🧹
         run: terraform fmt -recursive -write=true 
 
-      - name: Terraform validate
+      - name: Terraform validate 🔎
         run: terraform validate
 
-      - name: Terraform plan
+      - name: Terraform plan 📜
         id: plan
         env:
           TF_VAR_cluster_name: ${{ vars.CLUSTER_NAME }}
@@ -232,27 +233,24 @@ jobs:
           TF_VAR_app_env: ${{ vars.APP_ENV }}
           TF_VAR_app_namespace: ${{ vars.APP_NAMESPACE }}
         run: terraform plan -var-file="config/config.tfvars" -out="tfplan"
-        # continue-on-error: true
 
-      # - name: Terraform Plan Status
-      #   if: steps.plan.outcome == 'failure'
-      #   run: exit 1
-
-      - name: Terraform Apply
+      - name: Terraform Apply 🚀
         id: apply
         run: terraform apply -auto-approve "tfplan"
 
-      - name: Await deployment
+      - name: Await deployment 🕒
         working-directory: ./terraform
         id: terraform_output
         run: |
           IP=$(terraform output ingress_loadbalancer_ip)
+          IP=${IP//\"/}
           echo "INGRESS_LOADBALANCER_IP=$IP" >> $GITHUB_ENV
           sleep 60
 
-      - name: Validate deployment
-        id: myRequest
+      - name: Test deployment 🔌
         uses: fjogeleit/http-request-action@v1
         with:
           url: "http://${{ env.INGRESS_LOADBALANCER_IP }}/time"
+          method: GET
+          ignoreSsl: true
           
