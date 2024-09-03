@@ -94,6 +94,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: helm_lint
 
+    defaults:
+      run:
+        working-directory: ./api
+
     permissions:
       id-token: write 
       contents: read
@@ -141,19 +145,21 @@ jobs:
           echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
 
       - name: Build Docker image
-        working-directory: ./api
         run: |
           docker build -t ${{ env.IMAGE }} .
           docker tag ${{ env.IMAGE }} ${{ env.LATEST_IMAGE }}
 
       - name: Push Docker image to GCR
-        working-directory: ./api
         run: |
           docker push ${{ env.LATEST_IMAGE }}
 
   deploy:
     runs-on: ubuntu-latest
     needs: docker_build_push
+
+    defaults:
+      run:
+        working-directory: ./terraform
 
     permissions:
       id-token: write 
@@ -169,4 +175,48 @@ jobs:
           create_credentials_file: true
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}       
           token_format: "access_token"
-          access_token_lifetime: "120s"
+          access_token_lifetime: "600s"
+      
+      - name: Setup Terraform with specified version on the runner
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.5
+          terraform_wrapper: true
+             
+      - name: Terraform init
+        run: terraform init
+      
+      - name: Terraform Format
+        run: terraform fmt -recursive -write=true 
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -var 'cluster_name=helios' -var 'project_id=${{ secrets.GCP_PROJECT_ID }}' -var 'network_project_id=${{ secrets.GCP_PROJECT_ID }}' -var 'image_repository=${{ secrets.REGISTRY }}/${{ env.APP_NAME }}' -var 'app_name=${{ env.APP_NAME }}' -var 'app_env=${{ env.APP_ENV }}' -var 'app_namsepace=${{ env.APP_NAMESPACE }}' -var-file="config/config.tfvars" -out="tfplan"
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        run: terraform apply tfplan -auto-approve
+
+      - name: Save Terraform output
+        working-directory: ./terraform
+        id: terraform_output
+        run: echo "ingress_loadbalancer_ip=$(terraform output -raw ingress_loadbalancer_ip)" >> $GITHUB_ENV
+
+  validate:
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Await deployment
+        run: sleep 60
+      - name: Check deployment
+        run: |
+          curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1
+          
