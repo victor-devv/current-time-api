@@ -104,28 +104,28 @@ The application and infrastructure deployment is automated using a GitHub Action
 ## How To Run This Automation Locally
 
 - Clone this repository
-- Authorize docker to access GCR: `gcloud auth configure-docker gcr.io`
+- Authorize docker to access GCR `gcloud auth configure-docker gcr.io`
 - Build and push the docker image at `api`
-- Update the terraform backend file with your cloud storage bucket name   
-- Fill in the required values at `terraform/config/config.tfvars`
-- Change directory to the terraform root `cd terraform`
-- Initialize Terraform: `terraform init`
-- Generate a Terraform execution plan: `terraform plan -var-file="config/config.tfvars" -out="tfplan"`
+- Update the terraform backend file at `terraform/backend.tf` with your cloud storage bucket name   
+- Fill in the required variable values at `terraform/config/config.tfvars`
+- In your terminal, change directory to the terraform root `cd terraform`
+- Initialize Terraform `terraform init`
+- Generate a Terraform execution plan `terraform plan -var-file="config/config.tfvars" -out="tfplan"`
 - Apply the terraform plan: `terraform apply tfplan`
 - Once deployed, copy the generated `ingress_loadbalancer_ip` and test the deployment by running `curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1`
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="app"></a> [app](#vpc) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/app | main |
-| <a name="vpc"></a> [vpc](#vpc) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/vpc | main |
-| <a name="iam"></a> [iam](#iam) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/iam | main |
-| <a name="bastion"></a> [bastion](#bastion) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/bastion | main |
-| <a name="cluster"></a> [cluster](#cluster) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/cluster | main |
-| <a name="firewall"></a> [firewall](#firewall) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/firewall | main |
-| <a name="cert-manager"></a> [cert-manager](#cert-manager) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/cert-manager | main |
-| <a name="ingress-nginx"></a> [ingress-nginx](#ingress-nginx) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/ingress-nginx | main |
+| Name | Source | Description | Version |
+|------|--------|---------|---------|
+| <a name="vpc"></a> [vpc](#vpc) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/vpc | Deploys a network, subnet, a Cloud NAT router and Gateway for the cluster | main |
+| <a name="iam"></a> [iam](#iam) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/iam | Creates service accounts for the bastion node and cluster, and assigns required roles using the `least privilege` principle | main |
+| <a name="bastion"></a> [bastion](#bastion) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/bastion | Deploys a bastion node with access to the private cluster | main |
+| <a name="cluster"></a> [cluster](#cluster) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/cluster | Deploys a private cluster (with public endpoints, for the purpose of this demo), also enables monitoring, logging and maintenance on the cluster | main |
+| <a name="firewall"></a> [firewall](#firewall) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/firewall | Applies firewall rules for security | main |
+| <a name="ingress-nginx"></a> [ingress-nginx](#ingress-nginx) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/ingress-nginx | Deploys an NGINX loadbalancer on the cluster | main |
+| <a name="cert-manager"></a> [cert-manager](#cert-manager) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/cert-manager | Deploys cert-manager which helps to manage ssl certificates via letsencrypt | main |
+| <a name="app"></a> [app](#app) | https://github.com/victor-devv/current-time-api/tree/main/terraform/modules/app | Deploys the target namespace, deployment service and ingress resources, for the containerized application on the cluster | main |
 
 
 ## Inputs

@@ -191,6 +191,26 @@ jobs:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}       
           token_format: "access_token"
           access_token_lifetime: "600s"
+      - name: Set up environment variables
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          APP_NAME: ${{ github.event.repository.name }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          NAME=${{ env.REGISTRY }}/${{ env.APP_NAME }}
+
+          if [ "${{ env.GITHUB_REF_NAME }}" = "main" ]; then
+            TAG="latest-${{ env.GITHUB_SHA }}"
+          else
+            TAG="${{ env.GITHUB_REF_NAME }}"
+          fi
+
+          IMG=${NAME}:${{ env.GITHUB_SHA }}
+          LATEST=${NAME}:${TAG}
+
+          echo "IMAGE=$IMG" >> $GITHUB_ENV
+          echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
       
       - name: Setup Terraform with specified version on the runner
         uses: hashicorp/setup-terraform@v2
@@ -214,6 +234,7 @@ jobs:
           TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
           TF_VAR_network_project_id: ${{ secrets.GCP_PROJECT_ID }}
           TF_VAR_image_repository: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
+          TF_VAR_image_tag: ${{ env.LATEST_IMAGE }}
           TF_VAR_app_name: ${{ github.event.repository.name }}
           TF_VAR_app_env: ${{ vars.APP_ENV }}
           TF_VAR_app_namespace: ${{ vars.APP_NAMESPACE }}
