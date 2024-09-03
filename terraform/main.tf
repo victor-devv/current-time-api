@@ -159,6 +159,7 @@ module "app" {
   source              = "./modules/app/"
 
   app_name            = var.app_name
+  app_namespace       = var.app_namespace 
   image_repository    = var.image_repository
   image_tag           = var.image_tag
   app_env             = var.app_env
