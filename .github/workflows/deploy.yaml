@@ -18,12 +18,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.5.1
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: dependency-cache-${{ hashFiles('package.json') }}
@@ -39,7 +39,7 @@ jobs:
         run: yarn build:tsc
 
       - name: Persist workspace (node_modules and dist)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: workspace
           path: |
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Install Docker Compose
         run: |
@@ -194,13 +194,13 @@ jobs:
       - name: Terraform plan
         id: plan
         env:
-          TF_VAR_CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
-          TF_VAR_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          TF_VAR_NETWORK_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          TF_VAR_IMAGE_REPOSITORY: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
-          TF_VAR_APP_NAME: ${{ github.event.repository.name }}
-          TF_VAR_APP_ENV: ${{ vars.APP_ENV }}
-          TF_VAR_APP_NAMESPACE: ${{ vars.APP_NAMESPACE }}
+          TF_VAR_cluster_name: ${{ vars.CLUSTER_NAME }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+          TF_VAR_network_project_id: ${{ secrets.GCP_PROJECT_ID }}
+          TF_VAR_image_repository: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
+          TF_VAR_app_name: ${{ github.event.repository.name }}
+          TF_VAR_app_env: ${{ vars.APP_ENV }}
+          TF_VAR_app_namespace: ${{ vars.APP_NAMESPACE }}
         run: terraform plan -var-file="config/config.tfvars" -out="tfplan"
         continue-on-error: true
 
