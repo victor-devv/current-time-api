@@ -10,6 +10,8 @@ RUN yarn
 
 COPY . .
 
+RUN yarn build:tsc
+
 FROM node:20.5.1-alpine
 
 WORKDIR /app
