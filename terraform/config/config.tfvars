@@ -1,11 +1,3 @@
-project_id             = ""
-network_project_id     = ""
 region                 = "europe-west2"  
-cluster_name           = ""
 release_channel        = "STABLE"
-image_repository       = ""
-image_tag              = ""
-app_name               = ""
-app_env                = ""
-app_namespace          = ""
 replica_count          = 1
