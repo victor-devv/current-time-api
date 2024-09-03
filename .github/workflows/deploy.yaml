@@ -108,16 +108,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node_modules
+          path: api
 
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
           name: dist
-
-      - name: Move artifacts
-        run: |
-          mv node_modules api/
-          mv dist api/
+          path: api
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -162,6 +159,7 @@ jobs:
       - name: Build Docker image
         working-directory: ./api
         run: |
+          ls
           docker build -t ${{ env.IMAGE }} .
           docker tag ${{ env.IMAGE }} ${{ env.LATEST_IMAGE }}
 
