@@ -206,7 +206,7 @@ jobs:
           echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
       
       - name: Setup Terraform with specified version on the runner
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.5
           terraform_wrapper: false
@@ -242,19 +242,12 @@ jobs:
         id: apply
         run: terraform apply -auto-approve "tfplan"
 
-      - name: Save Terraform output
+      - name: Validate deployment
         working-directory: ./terraform
         id: terraform_output
-        run: echo "INGRESS_LOADBALANCER_IP=$(terraform output ingress_loadbalancer_ip)" >> $GITHUB_ENV
-
-  validate:
-    runs-on: ubuntu-latest
-    needs: deploy
-
-    steps:
-      - name: Await deployment
-        run: sleep 60
-      - name: Check deployment
         run: |
-          curl --fail http://${{ env.INGRESS_LOADBALANCER_IP }}/time || exit 1
+          INGRESS_LOADBALANCER_IP=$(terraform output ingress_loadbalancer_ip)
+          echo $INGRESS_LOADBALANCER_IP
+          sleep 60
+          curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1
           
