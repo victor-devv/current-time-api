@@ -48,6 +48,7 @@ jobs:
 
   helm_lint: 
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - uses: actions/checkout@v3
@@ -64,6 +65,7 @@ jobs:
 
   docker_build_push:
     runs-on: ubuntu-latest
+    needs: helm_lint
 
     permissions:
       id-token: write 
@@ -119,4 +121,4 @@ jobs:
           push: true          
           tags: ${{ env.LATEST_IMAGE }}
           file: api/Dockerfile 
-          context: api/Dockerfile
+          # context: api/Dockerfile
