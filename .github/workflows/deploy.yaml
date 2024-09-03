@@ -113,13 +113,13 @@ jobs:
           echo "IMAGE=$IMG" >> $GITHUB_ENV
           echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          registry: ${{ secrets.REGISTRY }}
-          image: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
-          push: true          
-          tags: ${{ env.LATEST_IMAGE }}
-          file: api/Dockerfile
-          directory: api 
-          # context: api/Dockerfile
+      - name: Build Docker image
+        working-directory: ./api
+        run: |
+          docker build -t ${{ env.IMAGE }} .
+          docker tag ${{ env.IMAGE }} ${{ env.LATEST_IMAGE }}
+
+      - name: Push Docker image to GCR
+        working-directory: ./api
+        run: |
+          docker push ${{ env.LATEST_IMAGE }}
