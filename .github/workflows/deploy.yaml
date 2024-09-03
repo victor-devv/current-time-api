@@ -238,7 +238,7 @@ jobs:
         id: apply
         run: terraform apply -auto-approve "tfplan"
 
-      - name: Await deployment 🕒
+      - name: Await deployment 💤
         working-directory: ./terraform
         id: terraform_output
         run: |
@@ -248,9 +248,16 @@ jobs:
           sleep 60
 
       - name: Test deployment 🔌
+        id: deploytest
         uses: fjogeleit/http-request-action@v1
         with:
           url: "http://${{ env.INGRESS_LOADBALANCER_IP }}/time"
           method: GET
           ignoreSsl: true
+          
+      - name: View API Response
+        run: |
+          echo ${{ steps.deploytest.outputs.response }}
+          echo ${{ steps.deploytest.outputs.headers }}
+          echo ${{ steps.deploytest.outputs.status }}
           
