@@ -1,9 +1,20 @@
 version: '3'
 services:
+  app-service:
+    build: .
+    environment:
+      NODE_ENV: test
+      PORT: '3005'
+    command:
+      - /bin/sh
+      - -c
+      - yarn start
   app:
     build: .
     environment:
       NODE_ENV: test
       PORT: '3000'
     command:
+      - /bin/sh
+      - -c
       - yarn test
