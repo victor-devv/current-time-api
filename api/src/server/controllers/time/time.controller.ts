@@ -18,7 +18,8 @@ export default class TimeController extends BaseController {
   @httpGet("/")
   async getUser(@request() req: Request, @response() res: Response) {
     try {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = 'Africa/Lagos';
       const now = moment().tz(timezone);
 
       const data = {
