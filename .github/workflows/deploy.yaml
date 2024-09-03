@@ -191,9 +191,6 @@ jobs:
       - name: Terraform validate
         run: terraform validate
 
-      - name: unlock
-        run: terraform force-unlock -force 1725372057179980
-
       - name: Terraform plan
         id: plan
         env:
@@ -212,7 +209,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        run: terraform apply tfplan -auto-approve
+        run: terraform apply tfplan --auto-approve
 
       - name: Save Terraform output
         working-directory: ./terraform
