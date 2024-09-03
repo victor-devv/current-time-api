@@ -104,17 +104,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download node_modules artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules
-          path: api
-
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
           name: dist
-          path: api
+          path: ./api
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -209,8 +203,7 @@ jobs:
           IMG=${NAME}:${{ env.GITHUB_SHA }}
           LATEST=${NAME}:${TAG}
 
-          echo "IMAGE=$IMG" >> $GITHUB_ENV
-          echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
+          echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
       
       - name: Setup Terraform with specified version on the runner
         uses: hashicorp/setup-terraform@v2
@@ -234,7 +227,7 @@ jobs:
           TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
           TF_VAR_network_project_id: ${{ secrets.GCP_PROJECT_ID }}
           TF_VAR_image_repository: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
-          TF_VAR_image_tag: ${{ env.LATEST_IMAGE }}
+          TF_VAR_image_tag: ${{ env.LATEST_TAG }}
           TF_VAR_app_name: ${{ github.event.repository.name }}
           TF_VAR_app_env: ${{ vars.APP_ENV }}
           TF_VAR_app_namespace: ${{ vars.APP_NAMESPACE }}
