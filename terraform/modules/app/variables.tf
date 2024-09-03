@@ -18,6 +18,11 @@ variable "app_env" {
   description = "The application environment"
 }
 
+variable "app_namespace" {
+  type        = string
+  description = "The kubernetes namespace to deploy the application to"
+}
+
 variable "replica_count" {
   type        = number
   description = "The deployment replica count"

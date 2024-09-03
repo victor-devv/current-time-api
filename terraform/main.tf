@@ -63,7 +63,7 @@ module "iam" {
   grant_registry_access   = true
 }
 
-# BASTION NODE - deploys a Bastion host which helps grant access to the private Control plane, limiting the possible attack surface area
+# BASTION NODE 
 # ================================================================================
 
 module "bastion" {

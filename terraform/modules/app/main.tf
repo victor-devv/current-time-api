@@ -1,19 +1,13 @@
-resource "kubernetes_namespace" "production" {
+resource "kubernetes_namespace" "app" {
   metadata {
-    name = "production"
-  }
-}
-
-resource "kubernetes_namespace" "staging" {
-  metadata {
-    name = "staging"
+    name = var.app_namespace
   }
 }
 
 resource "helm_release" "app" {
-  name      = "shortlet-current-time"
+  name      = var.app_name
   chart     = "./modules/app/helm"
-  namespace = "production"
+  namespace = var.app_namespace
 
   set {
     name  = "nameOverride"
@@ -48,10 +42,10 @@ resource "helm_release" "app" {
   timeout = 60
 }
 
-resource "kubernetes_ingress_v1" "prod_ingress" {
+resource "kubernetes_ingress_v1" "app" {
   metadata {
-    name      = kubernetes_namespace.production.metadata[0].name
-    namespace = kubernetes_namespace.production.metadata[0].name
+    name      = kubernetes_namespace.app.metadata[0].name
+    namespace = kubernetes_namespace.app.metadata[0].name
     annotations = {
       "cert-manager.io/cluster-issuer"              = "letsencrypt"
       "kubernetes.io/ingress.class"                 = "nginx"

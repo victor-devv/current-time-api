@@ -47,6 +47,11 @@ variable "app_env" {
   description = "The application environment (production | staging)"
 }
 
+variable "app_namespace" {
+  type        = string
+  description = "The kubernetes namespace to deploy the application to"
+}
+
 variable "replica_count" {
   type        = number
   description = "The pod replica count for the deployment"
