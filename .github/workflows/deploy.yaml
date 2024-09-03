@@ -1,0 +1,120 @@
+name: Build, Test, and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.5.1
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: dependency-cache-${{ hashFiles('package.json') }}
+          restore-keys: |
+            dependency-cache-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build TypeScript
+        run: yarn build:tsc
+
+      - name: Persist workspace (node_modules and dist)
+        uses: actions/upload-artifact@v3
+        with:
+          name: workspace
+          path: |
+            node_modules
+            dist
+
+  helm_lint: 
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod +x get_helm.sh
+          ./get_helm.sh
+
+      - name: Lint charts
+        working-directory: ./terraform/modules/app
+        run: find . -path "./*" -type d -prune -not -name ".git" -not -name ".github" -not -name "docs" | xargs helm lint
+
+  docker_build_push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write 
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROV }}
+          create_credentials_file: true
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}       
+          token_format: "access_token"
+          access_token_lifetime: "120s"
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker for GCR
+        run: gcloud auth configure-docker
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up environment variables
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          APP_NAME: ${{ github.event.repository.name }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          NAME=${{ env.REGISTRY }}/${{ env.APP_NAME }}
+
+          if [ "${{ env.GITHUB_REF_NAME }}" = "main" ]; then
+            TAG="latest-${{ env.GITHUB_SHA }}"
+          else
+            TAG="${{ env.GITHUB_REF_NAME }}"
+          fi
+
+          IMG=${NAME}:${{ env.GITHUB_SHA }}
+          LATEST=${NAME}:${TAG}
+
+          echo "IMAGE=$IMG" >> $GITHUB_ENV
+          echo "LATEST_IMAGE=$LATEST" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          image: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
+          push: true          
+          tags: ${{ env.LATEST_IMAGE }}
+          file: api/Dockerfile 
+          context: api/Dockerfile
