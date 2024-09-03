@@ -11,6 +11,8 @@ The application and infrastructure deployment is automated using a GitHub Action
 - Google Cloud Workload Identity Provider setup for GitHub OIDC authentication in pipelines
 - Terraform
 - Docker
+- Docker Compose
+- Node.js
 - Yarn
 - GitHub
 
@@ -93,6 +95,9 @@ The application and infrastructure deployment is automated using a GitHub Action
 - Create workload identity pool provider: `gcloud iam workload-identity-pools providers create-oidc $PROVIDER_NAME --project="$PROJECT_ID" --location="global" --workload-identity-pool="$POOL_NAME" --display-name="$DISPLAY_NAME" --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud,attribute.repository=assertion.repository" --issuer-uri="https://token.actions.githubusercontent.com"`
 - Authorize Github Repository: `gcloud iam service-accounts add-iam-policy-binding $OIDC_SA_ID --project="$PROJECT_ID" --role="roles/iam.workloadIdentityUser" --member="principalSet://iam.googleapis.com/${WORKLOAD_IDENTITY_POOL_ID}/attribute.repository/${REPO}"`
 
+
+# Terraform
+
 ## How To Use This Automation
 
 - Create a new branch with the format `deploy/${cluster-name}` 
@@ -114,8 +119,6 @@ The application and infrastructure deployment is automated using a GitHub Action
 - Apply the terraform plan: `terraform apply tfplan`
 - Once deployed, copy the generated `ingress_loadbalancer_ip` and test the deployment by running `curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1`
 
-
-# Terraform
 ## Modules
 
 | Name | Description | Source | Version |
@@ -145,3 +148,23 @@ The application and infrastructure deployment is automated using a GitHub Action
 | <a name="app_env"></a> [app\_env](#input\_app\_env) | Application environment (production or staging) | `string` | n/a | yes |
 | <a name="app_namespace"></a> [app\_namespace](#input\_app\_namespace) | The kubernetes namespace to deploy the application to | `string` | n/a | yes |
 | <a name="replica_count"></a> [replica\_count](#input\_replica\_count) | The pod replica count for the deployment | `number` | 1 | no |
+
+
+# API
+
+## How To Run Locally
+
+- Clone this repository `git clone https://github.com/victor-devv/current-time-api.git`
+- Change directory `cd api`
+- Install dependencies `yarn install`
+- Compile the TypeScript files `yarn build:tsc`
+- Fill the environment variables in `.env` referencing `.env.example`
+- Run the application `yarn start:tsc`
+- Trigger a GET command to `http://localhost:3000/api/v1/time` assuming the selected port is 3000
+
+## How To Run Using Docker Compose
+
+- Clone this repository `git clone https://github.com/victor-devv/current-time-api.git`
+- Change directory `cd api`
+- Build and run the application `docker-compose up--build`
+- Trigger a GET command to `http://localhost:3000/api/v1/time`
