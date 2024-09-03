@@ -209,7 +209,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.5
-          terraform_wrapper: true
+          terraform_wrapper: false
              
       - name: Terraform init
         run: terraform init
@@ -232,19 +232,20 @@ jobs:
           TF_VAR_app_env: ${{ vars.APP_ENV }}
           TF_VAR_app_namespace: ${{ vars.APP_NAMESPACE }}
         run: terraform plan -var-file="config/config.tfvars" -out="tfplan"
-        continue-on-error: true
+        # continue-on-error: true
 
-      - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
+      # - name: Terraform Plan Status
+      #   if: steps.plan.outcome == 'failure'
+      #   run: exit 1
 
       - name: Terraform Apply
+        id: apply
         run: terraform apply -auto-approve "tfplan"
 
       - name: Save Terraform output
         working-directory: ./terraform
         id: terraform_output
-        run: echo "ingress_loadbalancer_ip=$(terraform output -raw ingress_loadbalancer_ip)" >> $GITHUB_ENV
+        run: echo "INGRESS_LOADBALANCER_IP=$(terraform output ingress_loadbalancer_ip)" >> $GITHUB_ENV
 
   validate:
     runs-on: ubuntu-latest

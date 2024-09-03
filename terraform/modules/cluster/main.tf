@@ -67,6 +67,9 @@ resource "google_container_cluster" "primary" {
   #Autopilot clusters are optimized to run most production workloads, and provision compute resources based on your Kubernetes manifests
   # enable_autopilot = false
 
+  #this will not be used in a proper workload cluster. disabling this so the cluster can be easily destroyed
+  deletion_protection = false
+
   dynamic "master_authorized_networks_config" {
     for_each = local.master_authorized_networks_config
     content {
