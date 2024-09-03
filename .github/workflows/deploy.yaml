@@ -118,7 +118,7 @@ jobs:
       - name: Build Docker image
         working-directory: ./api
         run: |
-          docker build -t gcr.io/shortlet-app-434312/current-time-api:latest
+          docker build -t gcr.io/shortlet-app-434312/current-time-api:latest .
 
       - name: Push Docker image to GCR
         working-directory: ./api
