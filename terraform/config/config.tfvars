@@ -1,11 +1,4 @@
-project_id             = ""
-network_project_id     = ""
 region                 = "europe-west2"  
-cluster_name           = ""
 release_channel        = "STABLE"
-image_repository       = ""
 image_tag              = "latest"
-app_name               = ""
-app_env                = "production"
-app_namespace          = "production"
 replica_count          = 1
