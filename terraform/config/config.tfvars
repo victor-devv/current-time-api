@@ -7,4 +7,5 @@ image_repository       = ""
 image_tag              = "latest"
 app_name               = ""
 app_env                = "production"
+app_namespace          = "production"
 replica_count          = 1
