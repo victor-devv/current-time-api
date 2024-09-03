@@ -31,9 +31,11 @@ jobs:
             dependency-cache-
 
       - name: Install dependencies
+        working-directory: ./api
         run: yarn install
 
       - name: Build TypeScript
+        working-directory: ./api
         run: yarn build:tsc
 
       - name: Persist workspace (node_modules and dist)
@@ -116,5 +118,5 @@ jobs:
           image: ${{ secrets.REGISTRY }}/${{ github.event.repository.name }}
           push: true          
           tags: ${{ env.LATEST_IMAGE }}
-          file: api/Dockerfile 
-          context: api/Dockerfile
+          file: ./api/Dockerfile 
+          context: ./api/Dockerfile
