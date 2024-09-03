@@ -52,7 +52,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./app
+        working-directory: ./api
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
