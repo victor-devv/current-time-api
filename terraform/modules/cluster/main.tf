@@ -229,9 +229,12 @@ resource "google_container_cluster" "primary" {
     for_each = length(var.monitoring_enabled_components) > 0 ? [1] : []
     content {
       enable_components = length(var.monitoring_enabled_components) > 0 ? var.monitoring_enabled_components : null
+      managed_prometheus {
+        enabled = true
+      }
     }
   }
-  
+
   dynamic "security_posture_config" {
     for_each = toset(var.security_posture_config)
     content {

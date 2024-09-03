@@ -110,6 +110,10 @@ module "cluster" {
   http_load_balancing         = false #NGINX ingress instead
   nodepool_machine_type       = "e2-custom-8-32768"
 
+  #monitoring and logging configuration (Stackdriver + Managed Prometheus)
+  monitoring_enabled_components   = ["SYSTEM_COMPONENTS", "APISERVER", "SCHEDULER", "CONTROLLER_MANAGER", "STORAGE", "POD", "DEPLOYMENT"]
+  logging_enabled_components      = ["SYSTEM_COMPONENTS", "APISERVER", "SCHEDULER", "CONTROLLER_MANAGER", "WORKLOADS"]
+
   depends_on = [ google_project_service.enabled_apis ]
 }
 

@@ -1,6 +1,6 @@
 # Current Time API
 
-This repository contains a comprehensive setup for deploying a Node.js implementation of a simple API that returns the current time in JSON format, alongside a robust cloud infrastructure consisting of a private Google Kubernetes Engine cluster and others, built using terraform. 
+This repository contains a comprehensive setup for deploying a Node.js implementation of a simple API that returns the current time in JSON format, alongside a robust cloud infrastructure consisting of a private Google Kubernetes Engine cluster and others, built using terraform. The deployed cluster is monitored by Google Cloud's Stackdriver Kubernetes Engine Monitoring & Logging, as well as Managed Prometheus services.
 
 The application and infrastructure deployment is automated using a GitHub Actions workflow which includes jobs that builds and tests the Node.js application, lints the helm charts, builds and pushes the application image to a private Google Container Registry, deploys the infrastructure, and exposes the API.
 
@@ -114,6 +114,8 @@ The application and infrastructure deployment is automated using a GitHub Action
 - Apply the terraform plan: `terraform apply tfplan`
 - Once deployed, copy the generated `ingress_loadbalancer_ip` and test the deployment by running `curl --fail http://$INGRESS_LOADBALANCER_IP/time || exit 1`
 
+
+# Terraform
 ## Modules
 
 | Name | Description | Source | Version |
