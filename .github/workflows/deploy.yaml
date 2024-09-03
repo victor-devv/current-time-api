@@ -38,13 +38,17 @@ jobs:
         working-directory: ./api
         run: yarn build:tsc
 
-      - name: Persist workspace (node_modules and dist)
+      - name: Persist node_modules artifact
         uses: actions/upload-artifact@v4
         with:
-          name: workspace
-          path: |
-            node_modules
-            dist
+          name: node_modules
+          path: ./api/node_modules
+
+      - name: Persist dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ./api/dist
 
   test:
     runs-on: ubuntu-latest
@@ -104,6 +108,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download node_modules artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node_modules
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+
+      - name: Move artifacts
+        run: |
+          mv node_modules api/
+          mv dist api/
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -121,10 +140,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Build TypeScript
-        working-directory: ./api
-        run: yarn build:tsc
 
       - name: Set up environment variables
         env:
