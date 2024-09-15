@@ -45,9 +45,6 @@ jobs:
       - name: Terraform init 🔨
         id: init
         run: terraform init
-
-      - name: Tf unlock
-        run: terraform force-unlock -force 1725393868424139
       
       - name: Terraform destroy 🗑️
         id : destroy
